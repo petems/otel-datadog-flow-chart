@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-flask-demo
+  labels:
+    app: otel-flask-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-flask-demo
+  template:
+    metadata:
+      labels:
+        app: otel-flask-demo
+    spec:
+      containers:
+        - name: otel-flask-demo
+          image: otel-flask-demo:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "http://$(NODE_IP):4317"
+            - name: OTEL_SERVICE_NAME
+              value: sandbox-05-otel-ddot
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "deployment.environment.name=sandbox,service.version=1.0.0"

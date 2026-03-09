@@ -1,0 +1,48 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    send_batch_size: 1000
+    timeout: 10s
+  resourcedetection:
+    detectors: [env, system]
+    timeout: 5s
+
+connectors:
+  datadog/connector:
+    traces:
+      compute_stats_by_span_kind: true
+      peer_tags_aggregation: true
+
+exporters:
+  datadog:
+    api:
+      site: ${env:DD_SITE}
+      key: ${env:DD_API_KEY}
+
+service:
+  telemetry:
+    logs:
+      level: info
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [datadog/connector, datadog]
+    traces/stats:
+      receivers: [datadog/connector]
+      exporters: [datadog]
+    metrics:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [datadog]
+    logs:
+      receivers: [otlp]
+      processors: [resourcedetection, batch]
+      exporters: [datadog]

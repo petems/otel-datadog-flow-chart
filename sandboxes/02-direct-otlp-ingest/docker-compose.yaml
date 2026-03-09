@@ -1,0 +1,13 @@
+services:
+  app:
+    build: ./app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - OTEL_SERVICE_NAME=sandbox-02-direct-otlp
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+      - OTEL_EXPORTER_OTLP_ENDPOINT=https://${DD_SITE:-datadoghq.com}
+      - OTEL_EXPORTER_OTLP_HEADERS=DD-API-KEY=${DD_API_KEY}
+      - OTEL_RESOURCE_ATTRIBUTES=deployment.environment.name=sandbox,service.version=1.0.0

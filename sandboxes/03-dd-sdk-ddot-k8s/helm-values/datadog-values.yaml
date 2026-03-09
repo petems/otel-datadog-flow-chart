@@ -1,0 +1,25 @@
+datadog:
+  apiKeyExistingSecret: datadog-secret
+  site: datadoghq.com
+  logs:
+    enabled: true
+    containerCollectAll: true
+  apm:
+    portEnabled: true
+  processAgent:
+    processCollection: true
+  otelCollector:
+    enabled: true
+    ports:
+      - containerPort: 4317
+        hostPort: 4317
+        name: otel-grpc
+        protocol: TCP
+      - containerPort: 4318
+        hostPort: 4318
+        name: otel-http
+        protocol: TCP
+
+agents:
+  image:
+    tag: 7.65.0

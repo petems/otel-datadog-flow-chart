@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dd-flask-demo
+  labels:
+    app: dd-flask-demo
+    tags.datadoghq.com/env: sandbox
+    tags.datadoghq.com/service: sandbox-03-dd-ddot
+    tags.datadoghq.com/version: "1.0.0"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dd-flask-demo
+  template:
+    metadata:
+      labels:
+        app: dd-flask-demo
+        tags.datadoghq.com/env: sandbox
+        tags.datadoghq.com/service: sandbox-03-dd-ddot
+        tags.datadoghq.com/version: "1.0.0"
+      annotations:
+        admission.datadoghq.com/enabled: "true"
+    spec:
+      containers:
+        - name: dd-flask-demo
+          image: dd-flask-demo:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DD_AGENT_HOST
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: DD_SERVICE
+              value: sandbox-03-dd-ddot
+            - name: DD_ENV
+              value: sandbox
+            - name: DD_VERSION
+              value: "1.0.0"
+            - name: DD_TRACE_OTEL_ENABLED
+              value: "true"
+            - name: DD_RUNTIME_METRICS_ENABLED
+              value: "true"
+            - name: DD_LOGS_INJECTION
+              value: "true"
