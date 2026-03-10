@@ -42,43 +42,52 @@ Sandbox 06: App ──OTLP──▶ DD Agent (OTLP receiver) ──▶ Datadog
 
 - Docker and Docker Compose
 - A [Datadog API key](https://app.datadoghq.com/organization-settings/api-keys)
+- [envchain](https://github.com/sorah/envchain) for secure secret management
 - For K8s sandboxes (03, 05): [minikube](https://minikube.sigs.k8s.io/), [helm](https://helm.sh/), [kubectl](https://kubernetes.io/docs/tasks/tools/)
+
+## Setting Up Your API Key
+
+This project uses [envchain](https://github.com/sorah/envchain) to securely manage the `DD_API_KEY` via your OS keychain, avoiding plaintext secrets in `.env` files.
+
+```bash
+# One-time setup: store your API key in the keychain under the "datadog" namespace
+envchain --set datadog DD_API_KEY
+```
+
+All commands are then prefixed with `envchain datadog` to inject the key at runtime.
+
+`DD_SITE` defaults to `datadoghq.com`. To use a different site (e.g. EU), either add it to envchain (`envchain --set datadog DD_SITE`) or pass it inline:
+
+```bash
+DD_SITE=datadoghq.eu envchain datadog docker compose up --build
+```
 
 ## Quick Start
 
 ```bash
-# 1. Pick a sandbox and navigate to it
+# Docker Compose sandboxes
 cd sandboxes/06-otel-sdk-dd-agent-otlp
+envchain datadog docker compose up --build
 
-# 2. Set up your API key
-cp .env.example .env
-# Edit .env and set DD_API_KEY
-
-# 3. Start the sandbox
-docker compose up --build
-
-# 4. Generate traffic (in another terminal)
+# In another terminal:
 ./generate-traffic.sh
 
-# 5. Check Datadog APM for traces
+# Check Datadog APM for traces
 # https://app.datadoghq.com/apm/services
 ```
 
 Or use the Makefile from the project root:
 
 ```bash
-export DD_API_KEY=your_key_here
-make sandbox-06    # or sandbox-01, sandbox-02, etc.
-make down-06       # cleanup
+envchain datadog make sandbox-06    # or sandbox-01, sandbox-02, etc.
+make down-06                        # cleanup (no key needed)
 ```
 
 For K8s sandboxes:
 
 ```bash
 cd sandboxes/03-dd-sdk-ddot-k8s
-cp .env.example .env
-# Edit .env and set DD_API_KEY
-bash setup-minikube.sh
+envchain datadog bash setup-minikube.sh
 kubectl port-forward -n sandbox-03 svc/dd-flask-demo 8080:8080
 ./generate-traffic.sh
 # Cleanup:

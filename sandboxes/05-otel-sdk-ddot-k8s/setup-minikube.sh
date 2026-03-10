@@ -5,16 +5,10 @@ command -v minikube >/dev/null || { echo "ERROR: minikube not installed"; exit 1
 command -v helm >/dev/null || { echo "ERROR: helm not installed"; exit 1; }
 command -v kubectl >/dev/null || { echo "ERROR: kubectl not installed"; exit 1; }
 
-if [ -f .env ]; then
-    set -a; source .env; set +a
-else
-    echo "ERROR: .env file not found. Copy .env.example and set DD_API_KEY."
-    exit 1
-fi
-
-[ -z "${DD_API_KEY:-}" ] && { echo "ERROR: DD_API_KEY not set"; exit 1; }
+[ -z "${DD_API_KEY:-}" ] && { echo "ERROR: DD_API_KEY not set. Run: envchain datadog env DD_API_KEY"; exit 1; }
 
 NAMESPACE="sandbox-05"
+DD_SITE="${DD_SITE:-datadoghq.com}"
 
 minikube start --driver=docker --cpus=4 --memory=4096
 
@@ -32,7 +26,8 @@ kubectl create secret generic datadog-secret \
 
 helm upgrade --install datadog datadog/datadog \
     -n "$NAMESPACE" \
-    -f helm-values/datadog-values.yaml
+    -f helm-values/datadog-values.yaml \
+    --set "datadog.site=$DD_SITE"
 
 echo "Waiting for Datadog Agent pods to be ready..."
 kubectl rollout status daemonset/datadog -n "$NAMESPACE" --timeout=120s || true

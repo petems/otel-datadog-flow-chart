@@ -15,18 +15,13 @@ Flask App --OTLP gRPC (4317)--> DDOT (Datadog Agent + OTel Collector) --> Datado
 
 ## Prerequisites
 
-- Docker
-- minikube
-- helm
-- kubectl
-- A Datadog API key
+- Docker, minikube, helm, kubectl
+- A Datadog API key stored via [envchain](https://github.com/sorah/envchain): `envchain --set datadog DD_API_KEY`
 
 ## Quick Start
 
 ```bash
-cp .env.example .env
-# Edit .env and set DD_API_KEY
-bash setup-minikube.sh
+envchain datadog bash setup-minikube.sh
 # Set up port-forward:
 kubectl port-forward -n sandbox-05 svc/otel-flask-demo 8080:8080
 # In another terminal:

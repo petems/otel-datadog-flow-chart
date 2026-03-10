@@ -8,20 +8,20 @@ OTel Setup Decision Guide with 6 runnable sandbox environments demonstrating dif
 
 ## Running Sandboxes
 
-All sandboxes require `DD_API_KEY`. Copy `.env.example` to `.env` in the sandbox directory and set it.
+All sandboxes require `DD_API_KEY` via [envchain](https://github.com/sorah/envchain) (one-time setup: `envchain --set datadog DD_API_KEY`). Prefix all commands with `envchain datadog` to inject the key at runtime.
 
 ```bash
 # Docker Compose sandboxes (01, 02, 04, 06)
-make sandbox-01  # OTel SDK + OSS Collector
-make sandbox-02  # Direct OTLP Ingest
-make sandbox-04  # DD SDK + DD Agent
-make sandbox-06  # OTel SDK + DD Agent OTLP
+envchain datadog make sandbox-01  # OTel SDK + OSS Collector
+envchain datadog make sandbox-02  # Direct OTLP Ingest
+envchain datadog make sandbox-04  # DD SDK + DD Agent
+envchain datadog make sandbox-06  # OTel SDK + DD Agent OTLP
 
 # Kubernetes sandboxes (03, 05) - require minikube, helm, kubectl
-make sandbox-03  # DD SDK + DDOT (recommended)
-make sandbox-05  # OTel SDK + DDOT
+envchain datadog make sandbox-03  # DD SDK + DDOT (recommended)
+envchain datadog make sandbox-05  # OTel SDK + DDOT
 
-# Cleanup
+# Cleanup (no key needed)
 make down-01     # or down-02, down-03, etc.
 make down-all
 ```
@@ -41,7 +41,7 @@ Each sandbox directory under `sandboxes/` is fully self-contained with its own c
 
 ### Key Files Per Sandbox Type
 
-**Docker Compose** (01, 02, 04, 06): `docker-compose.yaml`, `app/`, `.env.example`, `generate-traffic.sh`
+**Docker Compose** (01, 02, 04, 06): `docker-compose.yaml`, `app/`, `generate-traffic.sh`
 **Kubernetes** (03, 05): `setup-minikube.sh`, `teardown.sh`, `helm-values/datadog-values.yaml`, `k8s/`, `app/`
 
 ### Collector Config (Sandbox 01)

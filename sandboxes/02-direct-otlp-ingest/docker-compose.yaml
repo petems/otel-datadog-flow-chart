@@ -3,8 +3,6 @@ services:
     build: ./app
     ports:
       - "8080:8080"
-    env_file:
-      - .env
     environment:
       - OTEL_SERVICE_NAME=sandbox-02-direct-otlp
       - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf

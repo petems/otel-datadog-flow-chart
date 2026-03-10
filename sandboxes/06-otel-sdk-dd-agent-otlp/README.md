@@ -16,14 +16,12 @@ Flask App --OTLP gRPC (4317)--> DD Agent (OTLP receiver) --> Datadog
 ## Prerequisites
 
 - Docker and Docker Compose
-- A Datadog API key
+- A Datadog API key stored via [envchain](https://github.com/sorah/envchain): `envchain --set datadog DD_API_KEY`
 
 ## Quick Start
 
 ```bash
-cp .env.example .env
-# Edit .env and set DD_API_KEY
-docker compose up --build
+envchain datadog docker compose up --build
 # In another terminal:
 ./generate-traffic.sh
 ```

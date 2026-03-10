@@ -7,7 +7,7 @@ help: ## Show this help
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}'
 
 check-env: ## Verify DD_API_KEY is set
-	@test -n "$${DD_API_KEY}" || (echo "ERROR: DD_API_KEY not set. Export it or create .env"; exit 1)
+	@test -n "$${DD_API_KEY}" || (echo "ERROR: DD_API_KEY not set. Run: envchain datadog make <target>"; exit 1)
 
 # --- Docker Compose sandboxes ---
 sandbox-01: check-env ## Run Sandbox 1: OTel SDK + OSS Collector
